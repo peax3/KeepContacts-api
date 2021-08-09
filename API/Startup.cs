@@ -1,10 +1,12 @@
 using API.Extensions;
+using Entities.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Persistence;
 
 namespace API
 {
@@ -27,6 +29,7 @@ namespace API
          });
 
          services.AddSqliteConnection(Configuration);
+         services.AddScoped<IContactRepository, ContactRepository>();
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
