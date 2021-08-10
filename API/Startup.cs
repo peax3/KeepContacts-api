@@ -30,6 +30,7 @@ namespace API
 
          services.AddSqliteConnection(Configuration);
          services.AddScoped<IContactRepository, ContactRepository>();
+         services.AddAutoMapper(typeof(MappingProfile).Assembly);
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,6 @@
-﻿using Entities.Interfaces;
+﻿using AutoMapper;
+using Entities.Dto;
+using Entities.Interfaces;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,10 +15,12 @@ namespace API.Controllers
    public class ContactsController : ControllerBase
    {
       private readonly IContactRepository _contactRepository;
+      private readonly IMapper _mapper;
 
-      public ContactsController(IContactRepository contactRepository)
+      public ContactsController(IContactRepository contactRepository, IMapper mapper)
       {
          _contactRepository = contactRepository;
+         this._mapper = mapper;
       }
 
       [HttpGet]
@@ -35,9 +39,11 @@ namespace API.Controllers
       }
 
       [HttpPost]
-      public async Task<IActionResult> CreateContact(Contact contact)
+      public async Task<IActionResult> CreateContact([FromBody] ContactDto contactFromRequest)
       {
-         if (contact == null) return BadRequest();
+         if (contactFromRequest == null) return BadRequest();
+
+         var contact = _mapper.Map<Contact>(contactFromRequest);
 
          var isSuccessful = await _contactRepository.CreateContact(contact);
          if (!isSuccessful) return BadRequest("Failed to save contact");
@@ -46,23 +52,15 @@ namespace API.Controllers
       }
 
       [HttpPut("{id}")]
-      public async Task<IActionResult> UpdateContact(Guid id, [FromBody] Contact contactFromRequest)
+      public async Task<IActionResult> UpdateContact(Guid id, [FromBody] ContactDto contactFromRequest)
       {
-         var contact = await _contactRepository.GetContact(id);
-         if (contact == null) return NotFound();
+         var contactToUpdate = await _contactRepository.GetContact(id);
+         if (contactToUpdate == null) return NotFound();
 
-         var ContactToUpdate = new Contact
-         {
-            ContactId = contact.ContactId,
-            Name = contactFromRequest.Name ?? contact.Name,
-            Email = contactFromRequest.Email ?? contact.Name,
-            PhoneNumber = contactFromRequest.PhoneNumber ?? contact.PhoneNumber,
-            Address = contactFromRequest.Address ?? contact.PhoneNumber
-         };
+         _mapper.Map(contactFromRequest, contactToUpdate);
 
-         var isSuccessful = await _contactRepository.UpdateContact(ContactToUpdate);
+         var isSuccessful = await _contactRepository.UpdateContact(contactToUpdate);
          if (!isSuccessful) return BadRequest("Failed to Update contact");
-
          return Ok();
       }
 
