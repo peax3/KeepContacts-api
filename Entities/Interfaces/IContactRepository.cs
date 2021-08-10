@@ -12,5 +12,11 @@ namespace Entities.Interfaces
       Task<IEnumerable<Contact>> GetContacts();
 
       Task<Contact> GetContact(Guid id);
+
+      Task DeleteContact(Contact contactToDelete);
+
+      Task<bool> CreateContact(Contact contactToSave);
+
+      Task<bool> UpdateContact(Contact contactToUpdate);
    }
 }
