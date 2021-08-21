@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace API
 {
-   public class MappingProfile : Profile
-   {
-      public MappingProfile()
-      {
-         CreateMap<ContactDto, Contact>();
-      }
-   }
+	public class MappingProfile : Profile
+	{
+		public MappingProfile()
+		{
+			CreateMap<ContactDto, Contact>();
+			CreateMap<Contact, ContactResponseDto>();
+		}
+	}
 }

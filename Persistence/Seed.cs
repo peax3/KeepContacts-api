@@ -58,7 +58,7 @@ namespace Persistence
             new Contact
             {
                Name="Katty Perry",
-               Email="Justin@gmail.com",
+               Email="Kattyperry@gmail.com",
                PhoneNumber="00679432800",
                Owner = usersFromDb[1]
             }

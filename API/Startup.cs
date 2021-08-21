@@ -34,6 +34,7 @@ namespace API
 			services.AddIdentityService();
 			services.AddScoped<IContactRepository, ContactRepository>();
 			services.AddAutoMapper(typeof(MappingProfile).Assembly);
+			services.AddAuthorizationPolicy();
 			services.AddScoped<TokenService>();
 			services.AddJwtTokenAuthentication(Configuration);
 		}
@@ -52,7 +53,7 @@ namespace API
 			//app.UseHttpsRedirection();
 
 			app.UseRouting();
-
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

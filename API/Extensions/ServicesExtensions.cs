@@ -1,5 +1,7 @@
 ﻿using Entities.Models;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +50,19 @@ namespace API.Extensions
 					ValidateAudience = false
 				};
 			});
+		}
+
+		public static void AddAuthorizationPolicy(this IServiceCollection services)
+		{
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("IsOwnerRequirement", policy =>
+				{
+					policy.AddRequirements(new IsOwnerRequirement());
+				});
+			});
+
+			services.AddScoped<IAuthorizationHandler, IsOwnerRequirementHandler>();
 		}
 	}
 }

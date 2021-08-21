@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Entities.Interfaces
 {
-   public interface IContactRepository
-   {
-      Task<IEnumerable<Contact>> GetContacts();
+	public interface IContactRepository
+	{
+		Task<IEnumerable<Contact>> GetContacts(string ownerId, bool trackChanges);
 
-      Task<Contact> GetContact(Guid id);
+		Task<Contact> GetContact(Guid id, bool trackChanges);
 
-      Task DeleteContact(Contact contactToDelete);
+		Task DeleteContact(Contact contactToDelete);
 
-      Task<bool> CreateContact(Contact contactToSave);
+		Task<bool> CreateContact(Contact contactToSave);
 
-      Task<bool> UpdateContact(Contact contactToUpdate);
-   }
+		Task<bool> UpdateContact(Contact contactToUpdate);
+	}
 }
