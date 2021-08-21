@@ -49,7 +49,6 @@ namespace Persistence
 
 		public async Task<bool> UpdateContact(Contact contactToUpdate)
 		{
-			_dataContext.Entry<Contact>(contactToUpdate).State = EntityState.Modified;
 			return await _dataContext.SaveChangesAsync() > 0;
 		}
 	}

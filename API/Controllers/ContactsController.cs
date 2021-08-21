@@ -4,7 +4,9 @@ using Entities.Interfaces;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +23,14 @@ namespace API.Controllers
 		private readonly IContactRepository _contactRepository;
 		private readonly IMapper _mapper;
 		private readonly IAuthorizationService _authService;
+		private readonly UserManager<AppUser> _userManager;
 
-		public ContactsController(IContactRepository contactRepository, IMapper mapper, IAuthorizationService authService)
+		public ContactsController(IContactRepository contactRepository, IMapper mapper, IAuthorizationService authService, UserManager<AppUser> userManager)
 		{
 			_contactRepository = contactRepository;
 			this._mapper = mapper;
 			this._authService = authService;
+			this._userManager = userManager;
 		}
 
 		[HttpGet]
@@ -44,10 +48,10 @@ namespace API.Controllers
 		{
 			var contact = await _contactRepository.GetContact(id, false);
 
+			if (contact == null) return NotFound();
+
 			var authResult = await _authService.AuthorizeAsync(User, contact, "IsOwnerRequirement");
 			if (!authResult.Succeeded) return new ForbidResult();
-
-			if (contact == null) return NotFound();
 
 			var contactResponstDto = _mapper.Map<ContactResponseDto>(contact);
 			return Ok(contactResponstDto);
@@ -60,6 +64,11 @@ namespace API.Controllers
 
 			var contact = _mapper.Map<Contact>(contactFromRequest);
 
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			var user = await _userManager.Users.FirstOrDefaultAsync(user => user.Id == userId);
+
+			contact.Owner = user;
+
 			var isSuccessful = await _contactRepository.CreateContact(contact);
 			if (!isSuccessful) return BadRequest("Failed to save contact");
 
@@ -69,8 +78,11 @@ namespace API.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateContact(Guid id, [FromBody] ContactDto contactFromRequest)
 		{
-			var contactToUpdate = await _contactRepository.GetContact(id, false);
+			var contactToUpdate = await _contactRepository.GetContact(id, true);
 			if (contactToUpdate == null) return NotFound();
+
+			var authResult = await _authService.AuthorizeAsync(User, contactToUpdate, "IsOwnerRequirement");
+			if (!authResult.Succeeded) return new ForbidResult();
 
 			_mapper.Map(contactFromRequest, contactToUpdate);
 
@@ -82,9 +94,12 @@ namespace API.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteContact(Guid id)
 		{
-			var contactToDelete = await _contactRepository.GetContact(id, false);
+			var contactToDelete = await _contactRepository.GetContact(id, true);
 			if (contactToDelete == null)
 				return NotFound();
+
+			var authResult = await _authService.AuthorizeAsync(User, contactToDelete, "IsOwnerRequirement");
+			if (!authResult.Succeeded) return new ForbidResult();
 
 			await _contactRepository.DeleteContact(contactToDelete);
 			return Ok();
