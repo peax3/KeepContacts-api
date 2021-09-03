@@ -1,21 +1,17 @@
 ﻿using Entities.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence
 {
-   public class DataContext : IdentityDbContext<AppUser>
-   {
-      public DataContext(DbContextOptions<DataContext> options)
-         : base(options)
-      {
-      }
+	public class DataContext : IdentityDbContext<AppUser>
+	{
+		public DataContext(DbContextOptions<DataContext> options)
+			: base(options)
+		{
+		}
 
-      public DbSet<Contact> Contacts { get; set; }
-   }
+		public DbSet<Contact> Contacts { get; set; }
+		public DbSet<Avatar> Avatars { get; set; }
+	}
 }

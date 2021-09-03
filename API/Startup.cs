@@ -2,6 +2,7 @@ using API.Extensions;
 using API.Middleware;
 using API.Services;
 using Entities.Interfaces;
+using Infrastructure.Avatar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,10 +34,12 @@ namespace API
 			services.AddSqliteConnection(Configuration);
 			services.AddIdentityService();
 			services.AddScoped<IContactRepository, ContactRepository>();
+			services.AddScoped<IAvatarAccessor, AvatarAccessor>();
 			services.AddAutoMapper(typeof(MappingProfile).Assembly);
 			services.AddAuthorizationPolicy();
 			services.AddScoped<TokenService>();
 			services.AddJwtTokenAuthentication(Configuration);
+			services.ConfigureCloudinaryAccount(Configuration);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

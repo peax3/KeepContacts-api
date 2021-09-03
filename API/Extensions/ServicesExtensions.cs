@@ -1,8 +1,8 @@
 ﻿using Entities.Models;
+using Infrastructure.Avatar;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +63,11 @@ namespace API.Extensions
 			});
 
 			services.AddScoped<IAuthorizationHandler, IsOwnerRequirementHandler>();
+		}
+
+		public static void ConfigureCloudinaryAccount(this IServiceCollection services, IConfiguration configuration)
+		{
+			services.Configure<CloudinaryAccount>(configuration.GetSection("Cloudinary"));
 		}
 	}
 }

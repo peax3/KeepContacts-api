@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Persistence
@@ -34,8 +33,14 @@ namespace Persistence
 		{
 			var contact =
 				trackChanges ?
-				await _dataContext.Contacts.AsTracking().Include(c => c.Owner).FirstOrDefaultAsync(contact => contact.ContactId == id) :
-				await _dataContext.Contacts.AsNoTracking().Include(c => c.Owner).FirstOrDefaultAsync(contact => contact.ContactId == id);
+				await _dataContext.Contacts.AsTracking()
+	 .Include(c => c.Owner)
+	 .Include(c => c.Avatar)
+	 .FirstOrDefaultAsync(contact => contact.ContactId == id) :
+				await _dataContext.Contacts.AsNoTracking()
+	 .Include(c => c.Owner)
+	 .Include(c => c.Avatar)
+	 .FirstOrDefaultAsync(contact => contact.ContactId == id);
 
 			return contact;
 		}
@@ -43,8 +48,15 @@ namespace Persistence
 		public async Task<IEnumerable<Contact>> GetContacts(string ownerId, bool trackChanges)
 		{
 			return trackChanges ?
-				await _dataContext.Contacts.AsTracking().Include(c => c.Owner).Where(c => c.Owner.Id == ownerId).ToListAsync() :
-				await _dataContext.Contacts.AsNoTracking().Include(c => c.Owner).Where(c => c.Owner.Id == ownerId).ToListAsync();
+				await _dataContext.Contacts.AsTracking()
+	 .Include(c => c.Avatar)
+	 .Include(c => c.Owner)
+	 .Where(c => c.Owner.Id == ownerId).ToListAsync() :
+				await _dataContext.Contacts.AsNoTracking()
+	 .Include(c => c.Avatar)
+	 .Include(c => c.Owner)
+	 .Where(c => c.Owner.Id == ownerId)
+	 .ToListAsync();
 		}
 
 		public async Task<bool> UpdateContact(Contact contactToUpdate)
