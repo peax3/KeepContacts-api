@@ -3,7 +3,7 @@ manage your contacts
 
 ## Features
 
-- Perform CRUD (create, update, retrieve and delete) 
+- Perform CRUD (create, update, retrieve and delete) operations
 - Authentication and Authorization of users
 - Contact's Avatar upload with Cloudinary
 
